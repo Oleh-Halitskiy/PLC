@@ -28,7 +28,7 @@ public class LLcomponent : MonoBehaviour
     private void Update()
     {
         ProvideOutPut();
-        Debug.Log(timer.Running);
+        Debug.Log(isOutPutting);
     }
     private void CheckContact()
     {
