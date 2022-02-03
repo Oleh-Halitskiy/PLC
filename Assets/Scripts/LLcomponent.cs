@@ -10,6 +10,15 @@ public class LLcomponent : MonoBehaviour
     [SerializeField] private LayerMask ConductLayer;
     [SerializeField] private LLComponentType LLCtype;
     [SerializeField] private float TimerTime;
+    public bool IsContacting
+    {
+        get { return isContacting; }
+    }
+    public bool IsOutPutting
+    {
+        get { return isOutPutting; }
+    }
+    private bool GetInput;
     private bool isContacting;
     private Timer timer;
     private enum LLComponentType
@@ -27,12 +36,12 @@ public class LLcomponent : MonoBehaviour
     }
     private void Update()
     {
+        GetInput = Input.parent.GetComponent<InputController>().GetInput;
         ProvideOutPut();
-        Debug.Log(isOutPutting);
     }
     private void CheckContact()
     {
-        if (Physics.CheckSphere(Input.position, SphereRadius, ConductLayer))
+        if (Physics.CheckSphere(Input.position, SphereRadius, ConductLayer) && GetInput)
             isContacting = true;
         else
             isContacting = false;
@@ -40,13 +49,13 @@ public class LLcomponent : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(Input.position, SphereRadius);
-        if(isOutPutting)
+        if (isOutPutting)
             Gizmos.DrawWireSphere(Output.position, SphereRadius);
     }
     private void CheckInputNO()
     {
 
-        if(isContacting)
+        if (isContacting)
         {
             isOutPutting = true;
         }
@@ -69,18 +78,20 @@ public class LLcomponent : MonoBehaviour
     }
     private void CheckInputTimer()
     {
-        if (isContacting && timer.Finished)
+        if (isContacting)
         {
-            isOutPutting = true;
+            Invoke("TimerHelper", TimerTime);
         }
-        if (isContacting && !timer.Running)
+        else
         {
-            timer.Run();
-        }
-        else if(!isContacting)
-        {
+            CancelInvoke();
             isOutPutting = false;
         }
+    }
+    private void TimerHelper()
+    {
+       // if(isContacting)
+        isOutPutting = true;
     }
     private void ProvideOutPut()
     {
@@ -98,4 +109,5 @@ public class LLcomponent : MonoBehaviour
             CheckInputTimer();
         }
     }
+
 }
